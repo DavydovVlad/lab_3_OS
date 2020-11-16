@@ -8,11 +8,11 @@ public class MemoryManager {
     private static final int memoryCapacity = 256;
     private static final int pageCapacity = 32;
     private final ArrayList<Process> processList = new ArrayList<>();
-
+    private Disk disk = new Disk();
     public void work() {
         for (int loop = 1; loop < 20; loop++) {
             for (Process process : processList) {
-                if(loop%2 == 1){
+                if(physicalMemory.isMemoryFullness()==1){
                     swapping(process);
                     continue;
                 }
@@ -32,7 +32,9 @@ public class MemoryManager {
                         System.out.println("Страница: " + usefulPage.getID() + " Процесс: " + process.getID() +
                                 " ФП: " + usefulPage.getPhysicalPageID() + " Модификация");
                     }
+
                     //если страницы нет, но в физической памяти есть место
+
                 } else if (pm[physicalMemory.getMaxPages() - 1] == null) {
                     for (int i = 0; i < physicalMemory.getMaxPages(); i++) {
                         if (pm[i] == null) {
@@ -45,6 +47,10 @@ public class MemoryManager {
                     }
                     //если в физической памяти нет места
                 } else {
+                    if(disk.isInDisk(usefulPage) != null)
+                    {
+                        usefulPage = disk.isInDisk(usefulPage);
+                    }
                     System.out.println("\nВыполняется страничное прерывание...");
                     Arrays.sort(pm);
                     for (Page page : pm) {
@@ -78,6 +84,7 @@ public class MemoryManager {
             Page trashPage = pm[i];
             if (trashPage != null) {
                 System.out.println("Запись на диск страницы " + trashPage.getID() + " процесса " + trashPage.getProcessID());
+                disk.Append(trashPage);
             }
             pm[i] = process.getVirtualMemory().get(i);
             System.out.println("Добавление страницы " + pm[i].getID() + " процесса " + pm[i].getProcessID());

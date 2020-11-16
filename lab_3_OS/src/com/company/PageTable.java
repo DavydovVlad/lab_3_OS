@@ -16,4 +16,11 @@ public class PageTable {
     public Page[] getPageTable() {
         return pageTable;
     }
+    public int isMemoryFullness() {
+        double percent = pageTable.length * 0.9;
+        if(pageTable[(int)percent] == null) {
+            return 0;
+        }
+        return 1;
+    }
 }
